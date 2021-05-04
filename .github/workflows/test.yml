@@ -1,0 +1,35 @@
+on: push
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    container: adoptopenjdk/maven-openjdk11
+    services:
+      postgres:
+        image: postgres:11
+        env:
+          POSTGRES_PASSWORD: postgres
+        # Set health checks to wait until postgres has started
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    steps:
+      - uses: actions/checkout@v2
+      - name: Cache Maven packages
+        uses: actions/cache@v2
+        with:
+          path: ~/.m2
+          key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
+          restore-keys: ${{ runner.os }}-m2
+      - name: Run Unit Tests
+        run: >-
+          mvn --activate-profiles tomcat --batch-mode
+          -Dwith-postgresql
+          -Dtest.env.db.postgresql.host=postgres
+          -Dmaven.gitcommitid.skip=true
+          test
+      - name: Publish Test Report
+        if: ${{ always() }}
+        uses: scacap/action-surefire-report@v1

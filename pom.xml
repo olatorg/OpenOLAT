@@ -1322,6 +1322,67 @@
 				</dependency>
 			</dependencies>
 		</profile>
+        <profile>
+            <!-- This profile packages a JAR file instead of a WAR file. It is used by OLAT. -->
+            <id>jar</id>
+            <build>
+                <resources>
+                    <resource>
+                        <directory>${project.basedir}/src/main/webapp</directory>
+                        <excludes>
+                            <exclude>**/*.pxm</exclude>
+                            <exclude>**/*.psd</exclude>
+                            <exclude>**/*.sh</exclude>
+                            <exclude>static/bootstrap/**</exclude>
+                            <exclude>**/*.README</exclude>
+                        </excludes>
+                    </resource>
+                </resources>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-war-plugin</artifactId>
+                        <configuration>
+                            <skip>true</skip>
+                        </configuration>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-jar-plugin</artifactId>
+                        <version>3.2.0</version>
+                        <executions>
+                            <execution>
+                                <id>package-jar</id>
+                                <goals>
+                                    <goal>jar</goal>
+                                </goals>
+                                <configuration>
+                                    <archive>
+                                        <manifest>
+                                            <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
+                                        </manifest>
+                                        <manifestEntries>
+                                            <!--suppress UnresolvedMavenProperty -->
+                                            <Build-Change-Set>${git.commit.id}</Build-Change-Set>
+                                            <!--suppress MavenModelInspection -->
+                                            <Build-Change-Set-Date>${git.commit.time}</Build-Change-Set-Date>
+                                            <!--suppress UnresolvedMavenProperty -->
+                                            <Build-Revision-Number>${git.commit.id.abbrev}</Build-Revision-Number>
+                                            <!--suppress UnresolvedMavenProperty -->
+                                            <Implementation-Build>${buildNumber}</Implementation-Build>
+                                        </manifestEntries>
+                                    </archive>
+                                    <classifier>jar</classifier>
+                                    <excludes>
+                                        <exclude>olat.local.properties</exclude>
+                                    </excludes>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
 	</profiles>
 	<repositories>
 		<repository>

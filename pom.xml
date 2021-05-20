@@ -4,7 +4,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.openolat</groupId>
 	<artifactId>openolat-lms</artifactId>
-	<version>15.4-SNAPSHOT</version>
+	<version>${revision}</version>
 	<packaging>war</packaging>
 	<name>OpenOLAT LMS</name>
 	<url>https://www.openolat.com</url>
@@ -1489,6 +1489,10 @@
 			</testResource>
 		</testResources>
 		<plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-enforcer-plugin</artifactId>
+            </plugin>
 			<!-- Set the build number from git -->
 			<plugin>
 				<groupId>pl.project13.maven</groupId>
@@ -1758,8 +1762,10 @@
 							</goals>
 							<configuration>
 								<rules>
+                                    <!-- Maven CI friendly versions require Maven 3.5.0 -->
+                                    <!-- https://maven.apache.org/maven-ci-friendly.html -->
 									<requireMavenVersion>
-										<version>3.0.5</version>
+										<version>[3.5,)</version>
 									</requireMavenVersion>
 									<requireJavaVersion>
 										<version>11+</version>
